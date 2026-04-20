@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STRATMG Admin — Content Editor</title>
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg: #0a0c10;
+            --panel: #0d1117;
+            --border: #1c2333;
+            --text: #c9d1d9;
+            --dim: #6e7681;
+            --blue: #1a9fff;
+            --orange: #e8872a;
+            --white: #f0f6fc;
+            --green: #40e870;
+            --red: #e84040;
+        }
+        body {
+            font-family: -apple-system, 'Segoe UI', system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+        .admin-header {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--panel);
+        }
+        .admin-title {
+            font-size: 1.1rem;
+            color: var(--white);
+            letter-spacing: 0.05em;
+        }
+        .admin-title span { color: var(--blue); }
+        .admin-status {
+            font-size: 0.8rem;
+            color: var(--dim);
+        }
+        .admin-status.connected { color: var(--green); }
+        .admin-status.error { color: var(--red); }
+        .admin-body {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        .auth-section {
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+        .auth-section p {
+            margin-bottom: 1.5rem;
+            color: var(--dim);
+        }
+        .section {
+            margin-bottom: 3rem;
+            border: 1px solid var(--border);
+            background: var(--panel);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        .section-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--orange);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+        .section-body { padding: 1.5rem; }
+        .field {
+            margin-bottom: 1.25rem;
+        }
+        .field:last-child { margin-bottom: 0; }
+        .field label {
+            display: block;
+            font-size: 0.75rem;
+            color: var(--dim);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.4rem;
+        }
+        .field input, .field textarea, .field select {
+            width: 100%;
+            padding: 0.6rem 0.8rem;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            color: var(--text);
+            font-size: 0.9rem;
+            font-family: inherit;
+            border-radius: 4px;
+            transition: border-color 0.2s;
+        }
+        .field input:focus, .field textarea:focus {
+            outline: none;
+            border-color: var(--blue);
+        }
+        .field textarea { min-height: 80px; resize: vertical; }
+        .card-group {
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            background: rgba(26, 159, 255, 0.02);
+        }
+        .card-group-title {
+            font-size: 0.7rem;
+            color: var(--blue);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.75rem;
+        }
+        .event-row {
+            display: grid;
+            grid-template-columns: 100px 1fr 1fr 100px;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            align-items: end;
+        }
+        .event-row input, .event-row select {
+            padding: 0.4rem 0.6rem;
+            font-size: 0.8rem;
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.7rem 1.5rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border: 1px solid var(--border);
+            background: var(--panel);
+            color: var(--text);
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+        .btn:hover {
+            border-color: var(--blue);
+            color: var(--white);
+        }
+        .btn-primary {
+            background: var(--blue);
+            border-color: var(--blue);
+            color: var(--white);
+        }
+        .btn-primary:hover {
+            background: #1588dd;
+        }
+        .btn-sm {
+            padding: 0.3rem 0.8rem;
+            font-size: 0.75rem;
+        }
+        .btn-danger {
+            border-color: var(--red);
+            color: var(--red);
+        }
+        .btn-danger:hover {
+            background: var(--red);
+            color: var(--white);
+        }
+        .actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            padding: 2rem 0;
+            border-top: 1px solid var(--border);
+            margin-top: 2rem;
+        }
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            padding: 0.8rem 1.5rem;
+            background: var(--green);
+            color: var(--bg);
+            font-weight: 600;
+            border-radius: 4px;
+            display: none;
+            z-index: 9999;
+        }
+        .toast.error { background: var(--red); color: var(--white); }
+        .day-group { margin-bottom: 1.5rem; }
+        .day-group-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        .day-group-title {
+            font-size: 0.8rem;
+            color: var(--white);
+            font-weight: 600;
+        }
+        .upload-field {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .upload-field input[type="text"] {
+            flex: 1;
+            background: var(--bg);
+            color: var(--dim);
+        }
+        .upload-field input[type="file"] {
+            display: none;
+        }
+        .upload-preview {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            background: var(--bg);
+        }
+        .upload-progress {
+            font-size: 0.7rem;
+            color: var(--blue);
+            margin-top: 0.3rem;
+        }
+        .card-group-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+        .card-group-header .card-group-title { margin-bottom: 0; }
+
+        /* Drag-and-drop calendar */
+        .cal-board {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+        .cal-day {
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            background: var(--bg);
+            min-height: 180px;
+            display: flex;
+            flex-direction: column;
+        }
+        .cal-day.drag-over {
+            border-color: var(--blue);
+            background: rgba(26, 159, 255, 0.06);
+        }
+        .cal-day-head {
+            padding: 0.5rem 0.6rem;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--white);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .cal-day-head .day-date-input {
+            width: 70px;
+            padding: 0.15rem 0.3rem;
+            font-size: 0.65rem;
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--dim);
+            text-align: right;
+            border-radius: 3px;
+        }
+        .cal-day-head .day-date-input:focus {
+            border-color: var(--border);
+            background: var(--bg);
+        }
+        .cal-day-body {
+            flex: 1;
+            padding: 0.4rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+        .cal-event {
+            padding: 0.4rem 0.5rem;
+            border-radius: 3px;
+            border-left: 3px solid var(--blue);
+            background: rgba(26,159,255,0.06);
+            cursor: grab;
+            font-size: 0.75rem;
+            transition: opacity 0.15s, box-shadow 0.15s;
+            position: relative;
+        }
+        .cal-event:active { cursor: grabbing; }
+        .cal-event.dragging { opacity: 0.4; }
+        .cal-event.drag-ghost {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+            opacity: 0.9;
+        }
+        .cal-event[data-type="combat"] { border-left-color: var(--red); }
+        .cal-event[data-type="logistics"] { border-left-color: var(--orange); }
+        .cal-event[data-type="social"] { border-left-color: var(--green); }
+        .cal-event[data-type="training"] { border-left-color: #a040e8; }
+        .cal-event-title {
+            color: var(--white);
+            font-weight: 600;
+            margin-bottom: 0.15rem;
+        }
+        .cal-event-meta {
+            color: var(--dim);
+            font-size: 0.65rem;
+        }
+        .cal-event-actions {
+            position: absolute;
+            top: 0.25rem;
+            right: 0.25rem;
+            display: flex;
+            gap: 0.2rem;
+        }
+        .cal-event-actions button {
+            background: none;
+            border: none;
+            color: var(--dim);
+            cursor: pointer;
+            font-size: 0.65rem;
+            padding: 0 0.2rem;
+            line-height: 1;
+        }
+        .cal-event-actions button:hover { color: var(--white); }
+        .cal-event-actions .ev-del:hover { color: var(--red); }
+        .cal-day-add {
+            border: 1px dashed var(--border);
+            border-radius: 3px;
+            padding: 0.3rem;
+            text-align: center;
+            font-size: 0.65rem;
+            color: var(--dim);
+            cursor: pointer;
+            margin-top: auto;
+        }
+        .cal-day-add:hover { border-color: var(--blue); color: var(--blue); }
+
+        /* Event edit modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-overlay.hidden { display: none; }
+        .modal {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 1.5rem;
+            min-width: 340px;
+            max-width: 420px;
+        }
+        .modal h3 {
+            font-size: 0.85rem;
+            color: var(--white);
+            margin-bottom: 1rem;
+        }
+        .modal .actions {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+        }
+
+        @media (max-width: 768px) {
+            .event-row { grid-template-columns: 1fr 1fr; }
+            .cal-board { grid-template-columns: 1fr 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <header class="admin-header">
+        <div class="admin-title">STRATMG <span>Admin</span></div>
+        <div class="admin-status" id="status">Not connected</div>
+    </header>
+
+    <div class="admin-body">
+        <!-- Auth -->
+        <div class="auth-section" id="auth-section">
+            <p>Enter a GitHub Personal Access Token with repo access to edit content.</p>
+            <div class="field" style="max-width:500px;margin:0 auto 1rem">
+                <input type="password" id="gh-token" placeholder="ghp_xxxxxxxxxxxx">
+            </div>
+            <button class="btn btn-primary" onclick="authenticate()">Connect</button>
+        </div>
+
+        <!-- Editor (hidden until auth) -->
+        <div id="editor" style="display:none">
+
+            <!-- NAV -->
+            <div class="section">
+                <div class="section-header">Navigation</div>
+                <div class="section-body">
+                    <div class="field">
+                        <label>Logo Text</label>
+                        <input type="text" id="nav-logoText">
+                    </div>
+                    <div class="field">
+                        <label>Logo Accent (colored word)</label>
+                        <input type="text" id="nav-logoAccent">
+                    </div>
+                    <div class="field">
+                        <label>Tagline</label>
+                        <input type="text" id="nav-tagline">
+                    </div>
+                </div>
+            </div>
+
+            <!-- HERO -->
+            <div class="section">
+                <div class="section-header">Hero Section</div>
+                <div class="section-body">
+                    <div class="field">
+                        <label>Tagline</label>
+                        <textarea id="hero-tagline"></textarea>
+                    </div>
+                    <div class="field">
+                        <label>Classification Line</label>
+                        <input type="text" id="hero-classification">
+                    </div>
+                    <div class="field">
+                        <label>Logo Image</label>
+                        <div class="upload-field">
+                            <img class="upload-preview" id="hero-logo-preview" src="">
+                            <input type="text" id="hero-logo" readonly>
+                            <input type="file" accept="image/*" onchange="uploadImage(this, 'hero-logo', 'images/')">
+                            <button class="btn btn-sm" onclick="this.previousElementSibling.click()">Upload</button>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label>Wordmark Image</label>
+                        <div class="upload-field">
+                            <img class="upload-preview" id="hero-wordmark-preview" src="">
+                            <input type="text" id="hero-wordmark" readonly>
+                            <input type="file" accept="image/*" onchange="uploadImage(this, 'hero-wordmark', 'images/')">
+                            <button class="btn btn-sm" onclick="this.previousElementSibling.click()">Upload</button>
+                        </div>
+                    </div>
+                    <div id="hero-buttons"></div>
+                </div>
+            </div>
+
+            <!-- DIVISIONS -->
+            <div class="section">
+                <div class="section-header">Divisions</div>
+                <div class="section-body">
+                    <div class="field">
+                        <label>Section Label</label>
+                        <input type="text" id="div-sectionLabel">
+                    </div>
+                    <div class="field">
+                        <label>Section Title</label>
+                        <input type="text" id="div-sectionTitle">
+                    </div>
+                    <div id="division-cards"></div>
+                    <button class="btn btn-sm" style="margin-top:1rem" onclick="addDivision()">+ Add Division</button>
+                </div>
+            </div>
+
+            <!-- BANNER -->
+            <div class="section">
+                <div class="section-header">Fleet Banner / Member Counter</div>
+                <div class="section-body">
+                    <div class="field">
+                        <label>Background Image</label>
+                        <div class="upload-field">
+                            <img class="upload-preview" id="banner-bg-preview" src="">
+                            <input type="text" id="banner-bg" readonly>
+                            <input type="file" accept="image/*" onchange="uploadImage(this, 'banner-bg', 'images/generated/')">
+                            <button class="btn btn-sm" onclick="this.previousElementSibling.click()">Upload</button>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label>Member Count</label>
+                        <input type="number" id="banner-memberCount">
+                    </div>
+                    <div class="field">
+                        <label>Member Label</label>
+                        <input type="text" id="banner-memberLabel">
+                    </div>
+                    <div class="field">
+                        <label>Member Subtitle</label>
+                        <input type="text" id="banner-memberSub">
+                    </div>
+                    <div class="field">
+                        <label>Quote</label>
+                        <input type="text" id="banner-quote">
+                    </div>
+                    <div class="field">
+                        <label>Quote Attribution</label>
+                        <input type="text" id="banner-quoteAttr">
+                    </div>
+                </div>
+            </div>
+
+            <!-- OPS CALENDAR -->
+            <div class="section">
+                <div class="section-header">Operations Calendar</div>
+                <div class="section-body">
+                    <div class="field">
+                        <label>Section Label</label>
+                        <input type="text" id="cal-sectionLabel">
+                    </div>
+                    <div class="field">
+                        <label>Section Title</label>
+                        <input type="text" id="cal-sectionTitle">
+                    </div>
+                    <div class="cal-board" id="cal-board"></div>
+                    <button class="btn btn-sm" style="margin-top:1rem" onclick="addDay()">+ Add Day</button>
+                </div>
+            </div>
+
+            <!-- Event Edit Modal -->
+            <div class="modal-overlay hidden" id="event-modal">
+                <div class="modal">
+                    <h3 id="modal-title">Edit Event</h3>
+                    <div class="field"><label>Time</label><input type="text" id="ev-time" placeholder="1900 UTC"></div>
+                    <div class="field"><label>Title</label><input type="text" id="ev-title" placeholder="Event title"></div>
+                    <div class="field"><label>Description</label><textarea id="ev-desc" placeholder="Description"></textarea></div>
+                    <div class="field"><label>Type</label>
+                        <select id="ev-type">
+                            <option value="combat">Combat</option>
+                            <option value="logistics">Logistics</option>
+                            <option value="training">Training</option>
+                            <option value="social">Social</option>
+                        </select>
+                    </div>
+                    <div class="actions">
+                        <button class="btn" onclick="closeModal()">Cancel</button>
+                        <button class="btn btn-primary" onclick="saveEvent()">Save</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FOOTER -->
+            <div class="section">
+                <div class="section-header">Footer</div>
+                <div class="section-body">
+                    <div class="field">
+                        <label>Subtitle</label>
+                        <input type="text" id="footer-sub">
+                    </div>
+                </div>
+            </div>
+
+            <div class="actions">
+                <button class="btn" onclick="loadContent()">Reload</button>
+                <button class="btn btn-primary" onclick="saveContent()">Save & Publish</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        async function uploadImage(fileInput, targetId, folder) {
+            const file = fileInput.files[0];
+            if (!file) return;
+
+            const name = file.name.toLowerCase().replace(/[^a-z0-9._-]/g, '_');
+            const path = folder + name;
+
+            toast('Uploading ' + name + '...');
+
+            const reader = new FileReader();
+            reader.onload = async function() {
+                const base64 = reader.result.split(',')[1];
+                try {
+                    // Check if file exists (need sha to overwrite)
+                    let sha = null;
+                    try {
+                        const existing = await ghApi(`/repos/${REPO}/contents/${path}`);
+                        sha = existing.sha;
+                    } catch (e) {}
+
+                    const body = {
+                        message: `Upload ${name} via admin panel`,
+                        content: base64
+                    };
+                    if (sha) body.sha = sha;
+
+                    await ghApi(`/repos/${REPO}/contents/${path}`, {
+                        method: 'PUT',
+                        body: JSON.stringify(body)
+                    });
+
+                    document.getElementById(targetId).value = path;
+                    const preview = document.getElementById(targetId + '-preview');
+                    if (preview) preview.src = URL.createObjectURL(file);
+                    toast('Uploaded ' + name);
+                } catch (e) {
+                    toast('Upload failed: ' + e.message, true);
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+
+        const REPO = 'AnarchySC/strategic-management-group';
+        const FILE_PATH = 'content.json';
+        let token = '';
+        let currentSha = '';
+        let content = {};
+
+        function toast(msg, isError) {
+            const el = document.getElementById('toast');
+            el.textContent = msg;
+            el.className = 'toast' + (isError ? ' error' : '');
+            el.style.display = 'block';
+            setTimeout(() => el.style.display = 'none', 3000);
+        }
+
+        async function ghApi(path, opts = {}) {
+            const resp = await fetch(`https://api.github.com${path}`, {
+                ...opts,
+                headers: {
+                    'Authorization': `token ${token}`,
+                    'Accept': 'application/vnd.github.v3+json',
+                    ...(opts.headers || {})
+                }
+            });
+            if (!resp.ok) throw new Error(`GitHub API: ${resp.status}`);
+            return resp.json();
+        }
+
+        async function authenticate() {
+            token = document.getElementById('gh-token').value.trim();
+            if (!token) return;
+            try {
+                const user = await ghApi('/user');
+                document.getElementById('status').textContent = `Connected as ${user.login}`;
+                document.getElementById('status').className = 'admin-status connected';
+                document.getElementById('auth-section').style.display = 'none';
+                document.getElementById('editor').style.display = 'block';
+                localStorage.setItem('stratmg_token', token);
+                await loadContent();
+            } catch (e) {
+                toast('Authentication failed — check your token', true);
+            }
+        }
+
+        async function loadContent() {
+            try {
+                const file = await ghApi(`/repos/${REPO}/contents/${FILE_PATH}`);
+                currentSha = file.sha;
+                content = JSON.parse(decodeURIComponent(escape(atob(file.content))));
+                populateForm();
+                toast('Content loaded');
+            } catch (e) {
+                toast('Failed to load content', true);
+            }
+        }
+
+        function populateForm() {
+            const c = content;
+
+            // Nav
+            document.getElementById('nav-logoText').value = c.nav?.logoText || '';
+            document.getElementById('nav-logoAccent').value = c.nav?.logoAccent || '';
+            document.getElementById('nav-tagline').value = c.nav?.tagline || '';
+
+            // Hero
+            document.getElementById('hero-tagline').value = c.hero?.tagline || '';
+            document.getElementById('hero-classification').value = c.hero?.classification || '';
+            document.getElementById('hero-logo').value = c.hero?.logoImage || '';
+            document.getElementById('hero-wordmark').value = c.hero?.wordmarkImage || '';
+            const lp = document.getElementById('hero-logo-preview');
+            if (lp && c.hero?.logoImage) lp.src = c.hero.logoImage;
+            const wp = document.getElementById('hero-wordmark-preview');
+            if (wp && c.hero?.wordmarkImage) wp.src = c.hero.wordmarkImage;
+
+            // Hero buttons
+            const btnContainer = document.getElementById('hero-buttons');
+            btnContainer.innerHTML = (c.hero?.buttons || []).map((btn, i) => `
+                <div class="card-group">
+                    <div class="card-group-title">Button ${i + 1}</div>
+                    <div class="field"><label>Text</label><input type="text" data-btn="${i}" data-field="text" value="${btn.text}"></div>
+                    <div class="field"><label>URL</label><input type="text" data-btn="${i}" data-field="url" value="${btn.url}"></div>
+                </div>
+            `).join('');
+
+            // Divisions
+            document.getElementById('div-sectionLabel').value = c.divisions?.sectionLabel || '';
+            document.getElementById('div-sectionTitle').value = c.divisions?.sectionTitle || '';
+            renderDivisionCards();
+
+            // Banner
+            document.getElementById('banner-bg').value = c.banner?.backgroundImage || '';
+            const bp = document.getElementById('banner-bg-preview');
+            if (bp && c.banner?.backgroundImage) bp.src = c.banner.backgroundImage;
+            document.getElementById('banner-memberCount').value = c.banner?.memberCount || 0;
+            document.getElementById('banner-memberLabel').value = c.banner?.memberLabel || '';
+            document.getElementById('banner-memberSub').value = c.banner?.memberSub || '';
+            document.getElementById('banner-quote').value = c.banner?.quote || '';
+            document.getElementById('banner-quoteAttr').value = c.banner?.quoteAttr || '';
+
+            // Calendar
+            document.getElementById('cal-sectionLabel').value = c.opsCalendar?.sectionLabel || '';
+            document.getElementById('cal-sectionTitle').value = c.opsCalendar?.sectionTitle || '';
+            renderCalBoard();
+
+            // Footer
+            document.getElementById('footer-sub').value = c.footer?.sub || '';
+        }
+
+        // =================== DIVISION MANAGEMENT ===================
+        function renderDivisionCards() {
+            const cards = content.divisions?.cards || [];
+            const container = document.getElementById('division-cards');
+            container.innerHTML = cards.map((card, i) => `
+                <div class="card-group">
+                    <div class="card-group-header">
+                        <span class="card-group-title">Card ${i + 1}: ${card.title || 'New Division'}</span>
+                        <button class="btn btn-sm btn-danger" onclick="removeDivision(${i})">Remove</button>
+                    </div>
+                    <div class="field"><label>Image</label>
+                        <div class="upload-field">
+                            <img class="upload-preview" id="card-${i}-image-preview" src="${card.image}">
+                            <input type="text" id="card-${i}-image" data-card="${i}" data-field="image" value="${card.image}" readonly>
+                            <input type="file" accept="image/*" onchange="uploadImage(this, 'card-${i}-image', 'images/generated/')">
+                            <button class="btn btn-sm" onclick="this.previousElementSibling.click()">Upload</button>
+                        </div>
+                    </div>
+                    <div class="field"><label>Label</label><input type="text" data-card="${i}" data-field="label" value="${escAttr(card.label)}"></div>
+                    <div class="field"><label>Title</label><input type="text" data-card="${i}" data-field="title" value="${escAttr(card.title)}"></div>
+                    <div class="field"><label>Description</label><textarea data-card="${i}" data-field="text">${escHtml(card.text)}</textarea></div>
+                </div>
+            `).join('');
+        }
+
+        function addDivision() {
+            collectDivisionCards();
+            content.divisions.cards.push({
+                image: 'images/generated/',
+                label: 'New Division',
+                title: 'Division Name',
+                text: 'Division description goes here.'
+            });
+            renderDivisionCards();
+            toast('Division added — fill in the details');
+        }
+
+        function removeDivision(index) {
+            if (!confirm('Remove this division?')) return;
+            collectDivisionCards();
+            content.divisions.cards.splice(index, 1);
+            renderDivisionCards();
+            toast('Division removed');
+        }
+
+        function collectDivisionCards() {
+            document.querySelectorAll('[data-card]').forEach(el => {
+                const i = parseInt(el.dataset.card);
+                if (content.divisions.cards[i]) {
+                    content.divisions.cards[i][el.dataset.field] = el.value;
+                }
+            });
+        }
+
+        function escAttr(s) { return (s||'').replace(/"/g, '&quot;').replace(/</g, '&lt;'); }
+        function escHtml(s) { return (s||'').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+
+        // =================== DRAG & DROP CALENDAR ===================
+        let dragData = null; // { dayIndex, eventIndex }
+        let editTarget = null; // { dayIndex, eventIndex } or { dayIndex, isNew: true }
+
+        function renderCalBoard() {
+            const days = content.opsCalendar?.days || [];
+            const board = document.getElementById('cal-board');
+            board.innerHTML = days.map((day, di) => `
+                <div class="cal-day" data-day="${di}"
+                     ondragover="calDragOver(event)" ondragleave="calDragLeave(event)" ondrop="calDrop(event, ${di})">
+                    <div class="cal-day-head">
+                        <span>${day.name}</span>
+                        <input class="day-date-input" data-day="${di}" data-field="date" value="${escAttr(day.date)}" placeholder="24 MAR">
+                    </div>
+                    <div class="cal-day-body" data-day="${di}">
+                        ${day.events.map((ev, ei) => calEventHtml(di, ei, ev)).join('')}
+                        <div class="cal-day-add" onclick="openAddEvent(${di})">+ Add Event</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function calEventHtml(di, ei, ev) {
+            return `<div class="cal-event" data-type="${ev.type}" draggable="true"
+                         data-day="${di}" data-ev="${ei}"
+                         ondragstart="calDragStart(event, ${di}, ${ei})" ondragend="calDragEnd(event)">
+                <div class="cal-event-actions">
+                    <button class="ev-edit" title="Edit" onclick="openEditEvent(${di}, ${ei})">✎</button>
+                    <button class="ev-del" title="Delete" onclick="removeEvent(${di}, ${ei})">✕</button>
+                </div>
+                <div class="cal-event-title">${escHtml(ev.title)}</div>
+                <div class="cal-event-meta">${escHtml(ev.time)} · ${ev.type}</div>
+            </div>`;
+        }
+
+        function calDragStart(e, di, ei) {
+            dragData = { dayIndex: di, eventIndex: ei };
+            e.target.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/plain', '');
+        }
+
+        function calDragEnd(e) {
+            e.target.classList.remove('dragging');
+            document.querySelectorAll('.cal-day').forEach(d => d.classList.remove('drag-over'));
+            dragData = null;
+        }
+
+        function calDragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            const day = e.currentTarget;
+            day.classList.add('drag-over');
+        }
+
+        function calDragLeave(e) {
+            e.currentTarget.classList.remove('drag-over');
+        }
+
+        function calDrop(e, targetDayIndex) {
+            e.preventDefault();
+            e.currentTarget.classList.remove('drag-over');
+            if (!dragData) return;
+            const { dayIndex: srcDay, eventIndex: srcEv } = dragData;
+            if (srcDay === targetDayIndex) return; // same day — no-op
+
+            collectCalDates();
+            const ev = content.opsCalendar.days[srcDay].events.splice(srcEv, 1)[0];
+            content.opsCalendar.days[targetDayIndex].events.push(ev);
+            renderCalBoard();
+            toast(`Moved "${ev.title}" to ${content.opsCalendar.days[targetDayIndex].name}`);
+        }
+
+        function openAddEvent(dayIndex) {
+            editTarget = { dayIndex, isNew: true };
+            document.getElementById('modal-title').textContent = 'Add Event';
+            document.getElementById('ev-time').value = '2000 UTC';
+            document.getElementById('ev-title').value = '';
+            document.getElementById('ev-desc').value = '';
+            document.getElementById('ev-type').value = 'combat';
+            document.getElementById('event-modal').classList.remove('hidden');
+        }
+
+        function openEditEvent(di, ei) {
+            editTarget = { dayIndex: di, eventIndex: ei };
+            const ev = content.opsCalendar.days[di].events[ei];
+            document.getElementById('modal-title').textContent = 'Edit Event';
+            document.getElementById('ev-time').value = ev.time;
+            document.getElementById('ev-title').value = ev.title;
+            document.getElementById('ev-desc').value = ev.desc;
+            document.getElementById('ev-type').value = ev.type;
+            document.getElementById('event-modal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('event-modal').classList.add('hidden');
+            editTarget = null;
+        }
+
+        function saveEvent() {
+            if (!editTarget) return;
+            const ev = {
+                time: document.getElementById('ev-time').value,
+                title: document.getElementById('ev-title').value,
+                desc: document.getElementById('ev-desc').value,
+                type: document.getElementById('ev-type').value
+            };
+            collectCalDates();
+            if (editTarget.isNew) {
+                content.opsCalendar.days[editTarget.dayIndex].events.push(ev);
+            } else {
+                content.opsCalendar.days[editTarget.dayIndex].events[editTarget.eventIndex] = ev;
+            }
+            closeModal();
+            renderCalBoard();
+            toast(editTarget.isNew ? 'Event added' : 'Event updated');
+        }
+
+        function removeEvent(di, ei) {
+            if (!confirm('Delete this event?')) return;
+            collectCalDates();
+            content.opsCalendar.days[di].events.splice(ei, 1);
+            renderCalBoard();
+            toast('Event deleted');
+        }
+
+        function addDay() {
+            collectCalDates();
+            const dayNames = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+            const existing = content.opsCalendar.days.map(d => d.name);
+            const next = dayNames.find(n => !existing.includes(n)) || 'New Day';
+            content.opsCalendar.days.push({ name: next, date: '', events: [] });
+            renderCalBoard();
+            toast(`${next} added`);
+        }
+
+        function collectCalDates() {
+            document.querySelectorAll('.cal-day-head [data-field="date"]').forEach(el => {
+                const di = parseInt(el.dataset.day);
+                if (content.opsCalendar.days[di]) {
+                    content.opsCalendar.days[di].date = el.value;
+                }
+            });
+        }
+
+        function collectForm() {
+            const c = content;
+
+            c.nav.logoText = document.getElementById('nav-logoText').value;
+            c.nav.logoAccent = document.getElementById('nav-logoAccent').value;
+            c.nav.tagline = document.getElementById('nav-tagline').value;
+
+            c.hero.tagline = document.getElementById('hero-tagline').value;
+            c.hero.classification = document.getElementById('hero-classification').value;
+            c.hero.logoImage = document.getElementById('hero-logo').value;
+            c.hero.wordmarkImage = document.getElementById('hero-wordmark').value;
+
+            document.querySelectorAll('[data-btn]').forEach(el => {
+                const i = parseInt(el.dataset.btn);
+                c.hero.buttons[i][el.dataset.field] = el.value;
+            });
+
+            c.divisions.sectionLabel = document.getElementById('div-sectionLabel').value;
+            c.divisions.sectionTitle = document.getElementById('div-sectionTitle').value;
+            collectDivisionCards();
+
+            c.banner.backgroundImage = document.getElementById('banner-bg').value;
+            c.banner.memberCount = parseInt(document.getElementById('banner-memberCount').value);
+            c.banner.memberLabel = document.getElementById('banner-memberLabel').value;
+            c.banner.memberSub = document.getElementById('banner-memberSub').value;
+            c.banner.quote = document.getElementById('banner-quote').value;
+            c.banner.quoteAttr = document.getElementById('banner-quoteAttr').value;
+
+            c.opsCalendar.sectionLabel = document.getElementById('cal-sectionLabel').value;
+            c.opsCalendar.sectionTitle = document.getElementById('cal-sectionTitle').value;
+            collectCalDates();
+
+            c.footer.sub = document.getElementById('footer-sub').value;
+
+            return c;
+        }
+
+        async function saveContent() {
+            try {
+                const data = collectForm();
+                const jsonStr = JSON.stringify(data, null, 2) + '\n';
+                const encoded = btoa(unescape(encodeURIComponent(jsonStr)));
+
+                await ghApi(`/repos/${REPO}/contents/${FILE_PATH}`, {
+                    method: 'PUT',
+                    body: JSON.stringify({
+                        message: 'Update site content via admin panel',
+                        content: encoded,
+                        sha: currentSha
+                    })
+                });
+
+                toast('Saved & published! Changes go live in ~1 min.');
+                await loadContent(); // refresh sha
+            } catch (e) {
+                toast('Save failed: ' + e.message, true);
+            }
+        }
+
+        // Auto-login from stored token
+        const stored = localStorage.getItem('stratmg_token');
+        if (stored) {
+            document.getElementById('gh-token').value = stored;
+            authenticate();
+        }
+    </script>
+</body>
+</html>

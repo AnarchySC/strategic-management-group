@@ -1,0 +1,7 @@
+# ComfyUI generation scripts & reference images
+generate_*.py
+images/ref/
+
+# OS junk
+.DS_Store
+Thumbs.db

@@ -1,0 +1,98 @@
+{
+  "nav": {
+    "logoText": "Strategic Management",
+    "logoAccent": "Group",
+    "tagline": "If the contract is signed, the mission gets done."
+  },
+  "hero": {
+    "logoImage": "images/stratmg_logo.jpg",
+    "wordmarkImage": "images/stratmg_logo.jpg",
+    "tagline": "Disciplined private military contracting. Security, tactical support, and force projection across every system. Relationships are the glue and the grease.",
+    "classification": "// Contract. Execute. Deliver.",
+    "buttons": [
+      {
+        "text": "Enlist Now",
+        "url": "https://robertsspaceindustries.com/en/orgs/STRATMG/members",
+        "style": "primary"
+      },
+      {
+        "text": "YouTube",
+        "url": "https://youtube.com/@strategicmanagementgroup-k5u",
+        "style": "default"
+      }
+    ]
+  },
+  "divisions": {
+    "sectionLabel": "// Operational Units",
+    "sectionTitle": "Divisions",
+    "cards": [
+      {
+        "image": "images/generated/fighter-squadron.png",
+        "label": "FIGHTER SQUADRON",
+        "title": "Air Superiority",
+        "text": "Interceptors, strike craft, and escort fighters. When a contract calls for orbital control or close air support, the squadron delivers. Precision, speed, and overlapping firing solutions."
+      },
+      {
+        "image": "images/generated/tactical-squadron.png",
+        "label": "TACTICAL SQUADRON",
+        "title": "Ground & Boarding Ops",
+        "text": "Ship-to-ship boarding, planetside insertion, crew recovery, and high-value target work. Tactical handles everything that requires boots on the deck and a rifle in the hand."
+      },
+      {
+        "image": "images/generated/logistics.png",
+        "label": "LOGISTICS",
+        "title": "Cargo, Mining & Escort",
+        "text": "Cargo escort, mining operations, salvage runs, and convoy security. Logistics keeps the fleet fed and the contracts moving — protection for every trade route that matters."
+      }
+    ]
+  },
+  "banner": {
+    "backgroundImage": "images/generated/fog_banner.png",
+    "memberCount": 39,
+    "memberLabel": "// Active Personnel",
+    "memberSub": "Operators and Counting",
+    "quote": "\"If the contract is signed, the mission gets done.\"",
+    "quoteAttr": "— STRATMG Doctrine"
+  },
+  "opsCalendar": {
+    "sectionLabel": "// Weekly Operations Schedule",
+    "sectionTitle": "Operations Board",
+    "days": [
+      {
+        "name": "Monday",
+        "date": "",
+        "events": []
+      },
+      {
+        "name": "Tuesday",
+        "date": "",
+        "events": []
+      },
+      {
+        "name": "Wednesday",
+        "date": "",
+        "events": []
+      },
+      {
+        "name": "Thursday",
+        "date": "",
+        "events": []
+      },
+      {
+        "name": "Friday",
+        "date": "",
+        "events": []
+      },
+      {
+        "name": "Saturday",
+        "date": "",
+        "events": []
+      }
+    ]
+  },
+  "footer": {
+    "logoText": "Strategic Management",
+    "logoAccent": "Group",
+    "sub": "Private Military Contracting — Star Citizen Organization"
+  }
+}
