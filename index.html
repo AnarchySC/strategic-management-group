@@ -75,10 +75,10 @@
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
         :root {
-            --blue: #1a9fff;
-            --blue-glow: rgba(26, 159, 255, 0.3);
-            --orange: #e8872a;
-            --orange-glow: rgba(232, 135, 42, 0.3);
+            --blue: #d4a017;
+            --blue-glow: rgba(212, 160, 23, 0.35);
+            --orange: #2ab8bd;
+            --orange-glow: rgba(42, 184, 189, 0.3);
             --dark: #0a0c10;
             --dark-panel: #0d1117;
             --dark-border: #1c2333;
@@ -341,8 +341,8 @@
         .btn:hover {
             border-color: var(--blue);
             color: var(--white);
-            background: rgba(26, 159, 255, 0.08);
-            box-shadow: 0 0 30px var(--blue-glow), inset 0 0 30px rgba(26, 159, 255, 0.03);
+            background: rgba(212, 160, 23, 0.08);
+            box-shadow: 0 0 30px var(--blue-glow), inset 0 0 30px rgba(212, 160, 23, 0.03);
         }
 
         .btn-primary {
@@ -351,7 +351,7 @@
         }
 
         .btn-primary:hover {
-            background: rgba(26, 159, 255, 0.15);
+            background: rgba(212, 160, 23, 0.15);
             color: var(--white);
         }
 
@@ -509,8 +509,8 @@
                 0deg,
                 transparent,
                 transparent 3px,
-                rgba(26, 159, 255, 0.03) 3px,
-                rgba(26, 159, 255, 0.03) 6px
+                rgba(212, 160, 23, 0.03) 3px,
+                rgba(212, 160, 23, 0.03) 6px
             );
             pointer-events: none;
             animation: holoScan 8s linear infinite;
@@ -534,7 +534,7 @@
         .fleet-banner-bg {
             position: absolute;
             inset: -20%;
-            background: url('images/generated/fog_banner.png') center center / cover no-repeat;
+            background: url('images/generated/stratmg_banner.jpg') center center / cover no-repeat;
             filter: brightness(0.45) contrast(1.15);
         }
 
@@ -591,7 +591,7 @@
             font-size: clamp(4rem, 10vw, 8rem);
             color: var(--white);
             line-height: 1;
-            text-shadow: 0 0 40px var(--blue-glow), 0 0 80px rgba(26, 159, 255, 0.15);
+            text-shadow: 0 0 40px var(--blue-glow), 0 0 80px rgba(212, 160, 23, 0.15);
         }
 
         .member-counter-sub {
@@ -638,7 +638,7 @@
         }
 
         .ops-day:hover {
-            background: rgba(26, 159, 255, 0.04);
+            background: rgba(212, 160, 23, 0.04);
         }
 
         .ops-day-header {
@@ -668,7 +668,7 @@
             padding: 0.6rem 0.8rem;
             margin-bottom: 0.6rem;
             border-left: 2px solid var(--blue);
-            background: rgba(26, 159, 255, 0.05);
+            background: rgba(212, 160, 23, 0.05);
         }
 
         .ops-event.event-combat {
