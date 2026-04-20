@@ -243,13 +243,15 @@
         }
 
         .hero-logo {
-            width: clamp(120px, 20vw, 220px);
+            width: clamp(180px, 28vw, 320px);
             height: auto;
-            margin-bottom: 1.5rem;
+            margin-bottom: 2rem;
             filter: drop-shadow(0 0 20px rgba(255,255,255,0.5)) drop-shadow(0 0 50px rgba(255,255,255,0.2));
             animation: fadeUp 1s ease 0.2s forwards, logoPulse 4s ease-in-out 1.2s infinite;
             opacity: 0;
         }
+
+        .hero-wordmark { display: none; }
 
         .hero-classification {
             font-family: 'PcapTerminal', monospace;
@@ -262,15 +264,6 @@
             animation: fadeUp 1s ease 1.3s forwards;
         }
 
-        .hero-wordmark {
-            width: clamp(300px, 50vw, 600px);
-            height: auto;
-            margin-top: 1.5rem;
-            margin-bottom: 2.5rem;
-            filter: drop-shadow(0 0 20px var(--blue-glow)) drop-shadow(0 0 50px rgba(26, 159, 255, 0.15));
-            opacity: 0;
-            animation: fadeUp 1s ease 0.5s forwards;
-        }
 
         .hero-subtitle {
             font-family: 'Organix', sans-serif;
@@ -918,7 +911,6 @@
         <div class="hero-overlay"></div>
         <div class="hero-content">
             <img src="images/stratmg_logo.jpg" alt="Strategic Management Group" class="hero-logo">
-            <img src="images/stratmg_logo.jpg" alt="Strategic Management Group" class="hero-wordmark">
             <div class="hero-divider"></div>
             <p class="hero-tagline">
                 Disciplined private military contracting. Security,
