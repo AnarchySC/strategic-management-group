@@ -27,19 +27,19 @@
     "sectionTitle": "Divisions",
     "cards": [
       {
-        "image": "images/generated/fighter-squadron.png",
+        "image": "images/generated/fighter-squadron.jpg",
         "label": "FIGHTER SQUADRON",
         "title": "Air Superiority",
         "text": "Interceptors, strike craft, and escort fighters. When a contract calls for orbital control or close air support, the squadron delivers. Precision, speed, and overlapping firing solutions."
       },
       {
-        "image": "images/generated/tactical-squadron.png",
+        "image": "images/generated/tactical-squadron.jpg",
         "label": "TACTICAL SQUADRON",
         "title": "Ground & Boarding Ops",
         "text": "Ship-to-ship boarding, planetside insertion, crew recovery, and high-value target work. Tactical handles everything that requires boots on the deck and a rifle in the hand."
       },
       {
-        "image": "images/generated/logistics.png",
+        "image": "images/generated/logistics.jpg",
         "label": "LOGISTICS",
         "title": "Cargo, Mining & Escort",
         "text": "Cargo escort, mining operations, salvage runs, and convoy security. Logistics keeps the fleet fed and the contracts moving — protection for every trade route that matters."
